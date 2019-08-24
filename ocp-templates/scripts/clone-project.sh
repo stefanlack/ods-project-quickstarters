@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 usage() {
     echo "usage: sh $0 -p <project id> -o <openshift host> -b <bitbucket host> -c <http basic auth credentials \
@@ -25,7 +25,17 @@ while [[ "$#" > 0 ]]; do case $1 in
   -t=*|--target-env=*) TARGET_ENV="${1#*=}";;
   -t|--target-env) TARGET_ENV="$2"; shift;;
 
-  -d|--debug) DEBUG="true"; shift;;
+  -d|--debug) DEBUG=true;;
+
+  -st|--skiptags) SKIP_TAGS=true;;
+
+  -gb=*|--git-branch=*) GIT_BRANCH="${1#*=}";;
+  -gb|--git-branch) GIT_BRANCH="$2"; shift;;
+
+  -st|--skip-tag) SKIP_TAGS="true"; shift;;
+
+  -gb=*|--git-branch=*) GIT_BRANCH="${1#*=}";;
+  -gb|--git-branch) GIT_BRANCH="$2"; shift;;
 
   *) echo "Unknown parameter passed: $1"; usage; exit 1;;
 esac; shift; done
@@ -59,6 +69,11 @@ if [[ -z "$OPENSHIFT_HOST" ]]; then
     echo "[ERROR]: No OpenShift host set - required value"
     usage
     exit 1
+fi
+
+if [[ -z "$GIT_BRANCH" ]]; then
+    echo "[DEBUG]: no target git branch set - defaulting to master"
+    GIT_BRANCH=master
 fi
 
 echo "Provided params: \
@@ -101,13 +116,18 @@ else
   verbose="-v true"
 fi
 echo "[INFO]: export resources from $SOURCE_ENV"
-sh export.sh -p $PROJECT_ID -h $OPENSHIFT_HOST -e $SOURCE_ENV -g $git_url -cpj $verbose
+sh export.sh -p $PROJECT_ID -h $OPENSHIFT_HOST -e $SOURCE_ENV -g $git_url -gb $GIT_BRANCH -cpj $verbose
 echo "[INFO]: import resources into $TARGET_ENV"
-sh import.sh -h $OPENSHIFT_HOST -p $PROJECT_ID -e $SOURCE_ENV -g $git_url -n $TARGET_PROJECT $verbose --apply true
+sh import.sh -h $OPENSHIFT_HOST -p $PROJECT_ID -e $SOURCE_ENV -g $git_url -gb $GIT_BRANCH -n $TARGET_PROJECT $verbose --apply true
 
 echo "[INFO]: cleanup workplace"
 cd ..
 rm -rf oc_migration_scripts
+
+if [[ ! -z "$SKIP_TAGS" ]]; then
+  echo "[INFO] Skipping imagestream tagging"
+  return
+fi
 
 echo "[INFO]: import image tags from $SOURCE_ENV"
 oc get is --no-headers -n $SOURCE_PROJECT | awk '{print $2}' | while read DOCKER_REPO; do
