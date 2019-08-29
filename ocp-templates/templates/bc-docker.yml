@@ -29,6 +29,7 @@ objects:
     name: ${COMPONENT}
     namespace: ${PROJECT}-${ENV}
   spec:
+    completionDeadlineSeconds: ${COMPLETION_DEADLINE_SECONDS}
     output:
       imageLabels:
       - name: "ods.application.name"
@@ -54,4 +55,8 @@ parameters:
 - description: The environment stage.
   displayName: Environment
   name: ENV
+  required: true
+- description: how long the docker build of the component can last before it is canceled
+  name: COMPLETION_DEADLINE_SECONDS
+  value: "1800"
   required: true
