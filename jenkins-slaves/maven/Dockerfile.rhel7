@@ -21,12 +21,18 @@ ENV MAVEN_VERSION=3.3 \
 
 #set JAVA_HOME
 ENV JAVA_HOME=/usr/lib/jvm/jre
+#
+# When bash is started non-interactively, to run a shell script, for example it
+# looks for this variable and source the content of this file. This will enable
+# the SCL for all scripts without need to do 'scl enable'.
+ADD contrib/bin/scl_enable /usr/local/bin/scl_enable
+ADD contrib/bin/configure-slave /usr/local/bin/configure-slave
 
 # Install Maven
-RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+RUN if [[ $(cat /etc/system-release) =~ "CentOS" ]] ; then yum install -y centos-release-scl rh-maven33; else yum-config-manager --enable rhel-server-rhscl-7-rpms ; fi && \
     # yum-config-manager --disable epel >/dev/null || : && \
     yum install -y wget && \
-    alternatives --set java $(alternatives --display java | awk '/family.*x86_64/ { print $1; }') && \
+    ALT=$(alternatives --display java | awk '/family.*x86_64/ { print $1; }' | head -1) ; echo ${ALT} ; alternatives --set java ${ALT} && \
 	wget https://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo && \
 	sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo && \
     INSTALL_PKGS="java-1.8.0-openjdk-devel.x86_64 apache-maven*" && \
@@ -34,11 +40,6 @@ RUN yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum clean all -y && \
     mkdir -p $HOME/.m2
 
-# When bash is started non-interactively, to run a shell script, for example it
-# looks for this variable and source the content of this file. This will enable
-# the SCL for all scripts without need to do 'scl enable'.
-ADD contrib/bin/scl_enable /usr/local/bin/scl_enable
-ADD contrib/bin/configure-slave /usr/local/bin/configure-slave
 
 # set java proxy var
 COPY set_maven_proxy.sh /tmp/set_maven_proxy.sh
