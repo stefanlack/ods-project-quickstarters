@@ -20,13 +20,14 @@ ENV MAVEN_VERSION=3.3 \
     GRADLE_USER_HOME=/home/jenkins/.gradle
 
 #set JAVA_HOME
-ENV JAVA_HOME=/usr/lib/jvm/jre
+ENV JAVA_HOME=/usr/lib/jvm/java
 #
 # When bash is started non-interactively, to run a shell script, for example it
 # looks for this variable and source the content of this file. This will enable
 # the SCL for all scripts without need to do 'scl enable'.
 ADD contrib/bin/scl_enable /usr/local/bin/scl_enable
 ADD contrib/bin/configure-slave /usr/local/bin/configure-slave
+ADD contrib/bin/run-jnlp-client /usr/local/bin/run-jnlp-client
 
 # Install Maven
 RUN if [[ $(cat /etc/system-release) =~ "CentOS" ]] ; then yum install -y centos-release-scl rh-maven33; else yum-config-manager --enable rhel-server-rhscl-7-rpms ; fi && \
