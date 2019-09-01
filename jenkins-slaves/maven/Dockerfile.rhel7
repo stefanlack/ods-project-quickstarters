@@ -61,6 +61,7 @@ RUN mv $HOME/.m2/settings.xml $HOME/.m2/settings.xml.orig && \
 # install gradle ..
 RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -O /tmp/gradle-${GRADLE_VERSION}-bin.zip && unzip -d /opt/gradle /tmp/gradle-${GRADLE_VERSION}-bin.zip && \
     sed -i '$ i\export PATH=$PATH:/opt/gradle/gradle-${GRADLE_VERSION}/bin' /usr/local/bin/run-jnlp-client && \
+    ln -s /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle /usr/local/bin/gradle && \
     rm /tmp/gradle-${GRADLE_VERSION}-bin.zip
 
 ADD gradlew /tmp/gradlew
