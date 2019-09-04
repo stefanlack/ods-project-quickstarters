@@ -82,7 +82,11 @@ objects:
           image: ''
           imagePullPolicy: Always
           name: webhook-proxy
-          resources: {}
+          resources: 
+            requests:
+              memory: ${MEMORY_REQUERST}
+            limits:
+              memory: ${MEMORY_LIMIT}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
@@ -122,3 +126,7 @@ parameters:
   value: "master,develop,production,staging,release/"
 - name: PIPELINE_TRIGGER_SECRET
   value: PIPELINE_TRIGGER_SECRET
+- name: MEMORY_REQUERST
+  value: 64Mi
+- name: MEMORY_LIMIT
+  value: 256Mi
