@@ -42,6 +42,11 @@ RUN if [[ $(cat /etc/system-release) =~ "CentOS" ]] ; then yum install -y centos
     yum clean all -y && \
     mkdir -p $HOME/.m2
 
+# When bash is started non-interactively, to run a shell script, for example it
+# looks for this variable and source the content of this file. This will enable
+# the SCL for all scripts without need to do 'scl enable'.
+ADD contrib/bin/scl_enable /usr/local/bin/scl_enable
+ADD contrib/bin/configure-slave /usr/local/bin/configure-slave
 
 # set java proxy var
 COPY set_maven_proxy.sh /tmp/set_maven_proxy.sh
