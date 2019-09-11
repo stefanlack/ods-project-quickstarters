@@ -9,9 +9,11 @@ buildscript {
                 if (!no_nexus && (nexus_url == "null" || nexus_user == "null" || nexus_pw == "null")) {
                     throw new GradleException("property no_nexus='false' (or not defined) but at least one of the properties nexus_url, nexus_user or nexus_pw is not configured. Please configure those properties!")
                 }
+                nexus_folder = "${project.findProperty('nexus_folder_releases') ?: System.getenv('NEXUS_FOLDER_RELEASES')}"
+                nexusFolderReleases = nexus_folder == "null" ? "maven-releases" : nexus_folder
 
-                nexus_folder = "${project.findProperty('nexus_folder') ?: System.getenv('NEXUS_FOLDER')}"
-                nexus_folder = nexus_folder == "null" ? "candidates" : nexus_folder
+                nexus_folder = "${project.findProperty('nexus_folder_snapshots') ?: System.getenv('NEXUS_FOLDER_SNAPSHOTS')}"
+                nexusFolderSnapshots = nexus_folder == "null" ? "maven-snapshots" : nexus_folder
 
                 snippetsDir = file('build/generated-snippets')
             }
@@ -23,6 +25,7 @@ plugins {
     id 'java'
     id 'maven'
     id 'jacoco'
+    id 'maven-publish'
 }
 
 
@@ -30,7 +33,7 @@ ext['spring-restdocs.version'] = '2.0.2.RELEASE'
 
 apply plugin: 'io.spring.dependency-management'
 
-group = '__GROUP__'
+group = 'org.opendevstack.tstsla03'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
@@ -93,6 +96,37 @@ asciidoctor {
 }
 
 bootJar {
-    archiveName "app.jar"
-    destinationDir file("$buildDir/../docker")
+    doLast {
+        println "Copy jar file build/libs/$bootJar.archiveName to docker directory!"
+        copy {
+            from "build/libs/$bootJar.archiveName"
+            into "$buildDir/../docker"
+            rename(bootJar.archiveName, "app.jar")
+        }
+    }
 }
+
+
+publishing {
+    repositories {
+        maven {
+            url = "${nexus_url}/repository/" + (version.endsWith('SNAPSHOT') ? nexusFolderSnapshots : nexusFolderReleases  )
+
+            credentials {
+                username = "${nexus_user}"
+                password = "${nexus_pw}"
+            }
+
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            artifactId = rootProject.name
+            groupId = group
+            version = "${version}"
+            from components.java
+        }
+    }
+}
+
+

@@ -32,6 +32,10 @@ odsPipeline(
 ) { context ->
   stageBuild(context)
   stageScanForSonarqube(context)
+
+  //Enable following line if you want to upload your artifact to nexus
+  //stageUploadToNexus(context)
+
   stageStartOpenshiftBuild(context)
   stageDeployToOpenshift(context)
 }
@@ -50,6 +54,15 @@ def stageBuild(def context) {
       if (status != 0) {
         error "Build failed!"
       }
+    }
+  }
+}
+
+def stageUploadToNexus(def context) {
+  withEnv(["TAGVERSION=${context.tagversion}", "NEXUS_HOST=${context.nexusHost}", "NEXUS_USERNAME=${context.nexusUsername}", "NEXUS_PASSWORD=${context.nexusPassword}", "JAVA_OPTS=${javaOpts}","GRADLE_TEST_OPTS=${gradleTestOpts}","ENVIRONMENT=${springBootEnv}"]) {
+    def deployStatus = sh(script: "./gradlew publish --stacktrace --no-daemon", returnStatus: true)
+    if (deployStatus != 0) {
+      error "Deployment to nexus failed!"
     }
   }
 }
