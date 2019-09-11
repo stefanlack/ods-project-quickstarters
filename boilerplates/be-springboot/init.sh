@@ -145,4 +145,4 @@ rm $SCRIPT_DIR/files/docker/Dockerfile.bak
 echo "copy custom files from quickstart to generated project"
 cp -rv $SCRIPT_DIR/files/. .
 echo "copy README.md from quickstart to generated project"
-cp  $SCRIPT_DIR/README.sh .
+cp  $SCRIPT_DIR/README.md .
