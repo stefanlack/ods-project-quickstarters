@@ -59,10 +59,19 @@ def stageBuild(def context) {
 }
 
 def stageUploadToNexus(def context) {
-  withEnv(["TAGVERSION=${context.tagversion}", "NEXUS_HOST=${context.nexusHost}", "NEXUS_USERNAME=${context.nexusUsername}", "NEXUS_PASSWORD=${context.nexusPassword}", "JAVA_OPTS=${javaOpts}","GRADLE_TEST_OPTS=${gradleTestOpts}","ENVIRONMENT=${springBootEnv}"]) {
-    def deployStatus = sh(script: "./gradlew publish --stacktrace --no-daemon", returnStatus: true)
-    if (deployStatus != 0) {
-      error "Deployment to nexus failed!"
+  def javaOpts = "-Xmx512m"
+  def springBootEnv = context.environment
+  if (springBootEnv.contains('-dev')) {
+    springBootEnv = 'dev'
+  }
+  stage('UploadArtifact') {
+    withEnv(["TAGVERSION=${context.tagversion}", "NEXUS_HOST=${context.nexusHost}", "NEXUS_USERNAME=${context.nexusUsername}", "NEXUS_PASSWORD=${context.nexusPassword}", "JAVA_OPTS=${javaOpts}","ENVIRONMENT=${springBootEnv}"]) {
+      def deployStatus = sh(script: "./gradlew publish --stacktrace --no-daemon", returnStatus: true)
+      if (deployStatus != 0) {
+        error "Deployment to nexus failed!"
+      }
     }
   }
 }
+
+

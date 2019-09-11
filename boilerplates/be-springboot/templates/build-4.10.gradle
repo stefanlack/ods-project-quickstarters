@@ -9,11 +9,12 @@ buildscript {
                 if (!no_nexus && (nexus_url == "null" || nexus_user == "null" || nexus_pw == "null")) {
                     throw new GradleException("property no_nexus='false' (or not defined) but at least one of the properties nexus_url, nexus_user or nexus_pw is not configured. Please configure those properties!")
                 }
-                nexus_folder = "${project.findProperty('nexus_folder_releases') ?: System.getenv('NEXUS_FOLDER_RELEASES')}"
-                nexusFolderReleases = nexus_folder == "null" ? "maven-releases" : nexus_folder
 
-                nexus_folder = "${project.findProperty('nexus_folder_snapshots') ?: System.getenv('NEXUS_FOLDER_SNAPSHOTS')}"
-                nexusFolderSnapshots = nexus_folder == "null" ? "maven-snapshots" : nexus_folder
+                def folderRel = (String)("${project.findProperty('nexus_folder_releases') ?: System.getenv('NEXUS_FOLDER_RELEASES')}")
+                nexusFolderReleases = folderRel == "null" ? "maven-releases" : folderRel
+
+                def folderSnaps = (String)("${project.findProperty('nexus_folder_snapshots') ?: System.getenv('NEXUS_FOLDER_SNAPSHOTS')}")
+                nexusFolderSnapshots = folderSnaps == "null" ? "maven-snapshots" : folderSnaps
 
                 snippetsDir = file('build/generated-snippets')
             }
