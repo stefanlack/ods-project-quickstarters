@@ -117,7 +117,7 @@ fi
 
 rm build.gradle.bak
 
-if [[ $USE_LEGACY_NEXUS_UPLOAD_SCRIPT==1 ]]; then
+if [[ $USE_LEGACY_NEXUS_UPLOAD_SCRIPT == 1 ]]; then
   echo "add legacy nexus upload scirpt to build.gradle"
 cat >> build.gradle <<EOL
 uploadArchives {
