@@ -236,12 +236,13 @@ echo "- debug OD_GIT_BRANCH=${OD_GIT_BRANCH}"
 if [[ -z ${OD_GIT_BRANCH// } ]]; then
     # no -> set to default master branch
     OD_GIT_BRANCH=master
-    echo "- debug - if OD_GIT_BRANCH=${OD_GIT_BRANCH}"
+    echo "- debug - setting variable OD_GIT_BRANCH=master, since no branch was specified."
 else
     # yes
     echo "- debug - else OD_GIT_BRANCH=${OD_GIT_BRANCH}"
-    git_checkout_expression="$git_checkout_expression -b ${OD_GIT_BRANCH}"
 fi
+git_checkout_expression="$git_checkout_expression -b ${OD_GIT_BRANCH}"
+
 # tag set?
 if [[ ! -z ${OD_GIT_TAG// } ]]; then
     # yes
