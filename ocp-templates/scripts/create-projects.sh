@@ -67,10 +67,12 @@ oc new-project ${PROJECT}-test
 
 JENKINS_ROLE=admin
 
-# allow jenkins from CD project to admin the environment projects
+echo "- allow jenkins from CD project to admin the environment project ${PROJECT}-dev"
 oc policy add-role-to-user ${JENKINS_ROLE} system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-dev
+echo "- allow jenkins from CD project to admin the environment project ${PROJECT}-test"
 oc policy add-role-to-user ${JENKINS_ROLE} system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-test
 
+echo "- add cluster role sel-provisioner to jenkis at project ${PROJECT}-cd"
 oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-cd
 
 # allow jenkins in <project>-cd to pull images (e.g. slave) from cd project
