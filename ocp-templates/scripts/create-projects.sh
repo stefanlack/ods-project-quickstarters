@@ -71,7 +71,6 @@ echo "- allow jenkins from CD project to admin the environment project ${PROJECT
 oc policy add-role-to-user ${JENKINS_ROLE} system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-dev
 echo "- allow jenkins from CD project to admin the environment project ${PROJECT}-test"
 oc policy add-role-to-user ${JENKINS_ROLE} system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-test
-
 echo "- add cluster role sel-provisioner to jenkis at project ${PROJECT}-cd"
 oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-cd
 

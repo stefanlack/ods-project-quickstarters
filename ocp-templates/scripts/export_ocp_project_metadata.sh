@@ -232,11 +232,14 @@ fi
 # switch to another git branch?
 git_checkout_expression="git checkout "
 # branch set in config
+echo "- debug OD_GIT_BRANCH=${OD_GIT_BRANCH}"
 if [[ -z ${OD_GIT_BRANCH// } ]]; then
     # no -> set to default master branch
     OD_GIT_BRANCH=master
+    echo "- debug - if OD_GIT_BRANCH=${OD_GIT_BRANCH}"
 else
     # yes
+    echo "- debug - else OD_GIT_BRANCH=${OD_GIT_BRANCH}"
     git_checkout_expression="$git_checkout_expression -b ${OD_GIT_BRANCH}"
 fi
 # tag set?
@@ -245,7 +248,7 @@ if [[ ! -z ${OD_GIT_TAG// } ]]; then
     git_checkout_expression="$git_checkout_expression tags/${OD_GIT_TAG}"
 fi
 #
-echo " -- check out git for $git_checkout_expression"
+echo " -- check out git using expression: $git_checkout_expression"
 eval ${git_checkout_expression}
 echo
 
