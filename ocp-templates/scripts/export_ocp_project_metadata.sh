@@ -242,12 +242,12 @@ else
     echo "- debug - else OD_GIT_BRANCH=${OD_GIT_BRANCH}"
 fi
 
-branchExists=`git show-ref refs/heads/${OD_GIT_BRANCH}`
-if [ -n "branchExists" ]; then
-    echo 'branch exists!'
-    git_checkout_expression="$git_checkout_expression ${OD_GIT_BRANCH}"
+if [ `git branch --list $OD_GIT_BRANCH` ]
+then
+   echo "Branch $OD_GIT_BRANCH already exists."
+   git_checkout_expression="$git_checkout_expression ${OD_GIT_BRANCH}"
 else
-    echo 'branch not exists!'
+    echo "Branch $OD_GIT_BRANCH does not exist."
     git_checkout_expression="$git_checkout_expression -b ${OD_GIT_BRANCH}"
 fi
 
