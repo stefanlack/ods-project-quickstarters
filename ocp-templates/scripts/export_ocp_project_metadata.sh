@@ -242,13 +242,13 @@ else
     echo "- debug - else OD_GIT_BRANCH=${OD_GIT_BRANCH}"
 fi
 
-if [ `git branch --list $OD_GIT_BRANCH` ]
+if [ -z "`git branch --list $OD_GIT_BRANCH`" ]
 then
-   echo "Branch $OD_GIT_BRANCH already exists."
-   git_checkout_expression="$git_checkout_expression ${OD_GIT_BRANCH}"
+  echo "Branch $OD_GIT_BRANCH does not exist."
+  git_checkout_expression="$git_checkout_expression -b ${OD_GIT_BRANCH}"
 else
-    echo "Branch $OD_GIT_BRANCH does not exist."
-    git_checkout_expression="$git_checkout_expression -b ${OD_GIT_BRANCH}"
+  echo "Branch $OD_GIT_BRANCH already exists."
+  git_checkout_expression="$git_checkout_expression ${OD_GIT_BRANCH}"
 fi
 
 
