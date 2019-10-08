@@ -58,6 +58,8 @@ if [ -z ${NEXUS_HOST+x} ]; then
     exit 1;
 else echo "NEXUS_HOST=${NEXUS_HOST}"; fi
 
+# TODO SLA: umstellen auf verwendung von ProjectRequest, z.B. wie folgt:
+# echo '{ "kind": "ProjectRequest", "apiVersion": "project.openshift.io/v1",   "metadata": {  "name": "${PROJECT}-cd"  } }' | oc apply -f -
 oc new-project ${PROJECT}-cd
 oc new-project ${PROJECT}-dev
 oc new-project ${PROJECT}-test
@@ -71,8 +73,11 @@ echo "- allow jenkins from CD project to admin the environment project ${PROJECT
 oc policy add-role-to-user ${JENKINS_ROLE} system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-dev
 echo "- allow jenkins from CD project to admin the environment project ${PROJECT}-test"
 oc policy add-role-to-user ${JENKINS_ROLE} system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-test
-echo "- add cluster role sel-provisioner to jenkis at project ${PROJECT}-cd"
-oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-cd
+
+# 08.10.2019: das folgende schlägt fehlt mit fehler  "Error from server (Forbidden): clusterrolebindings.rbac.authorization.k8s.io is forbidden: User "system:serviceaccount:cd:deployment" cannot list clusterrolebindings.rbac.authorization.k8s.io at the cluster scope: no RBAC policy matched"
+#deaktivert von SLA
+# echo "- add cluster role self-provisioner to jenkins at project ${PROJECT}-cd"
+# oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-cd
 
 # allow jenkins in <project>-cd to pull images (e.g. slave) from cd project
 oc policy add-role-to-user system:image-puller system:serviceaccount:${PROJECT}-cd:jenkins -n cd
