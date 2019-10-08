@@ -412,6 +412,8 @@ else
   fi
 fi
 
+echo "- Logged in openshift user:  $(oc whoami)"
+
 # setup 3 OpenShift projects
 # HINT: folder name should look like <project_name>-occonfig-artifacts
 project_name=$( echo $clonned_git_fld_name | cut -d '-' -f1 )
@@ -457,6 +459,8 @@ do
 			echo "!! Project export is empty - as errors occured above, hence aborting"
 			exit 1
 		fi
+
+
 
 		oc new-project ${curr_ocp_namespace} || exit 1
 		# create the baseline with service accounts, role bindings - and switch SA account

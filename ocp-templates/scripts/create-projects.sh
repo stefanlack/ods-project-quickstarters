@@ -58,8 +58,8 @@ if [ -z ${NEXUS_HOST+x} ]; then
     exit 1;
 else echo "NEXUS_HOST=${NEXUS_HOST}"; fi
 
-# TODO SLA: umstellen auf verwendung von ProjectRequest, z.B. wie folgt:
-# echo '{ "kind": "ProjectRequest", "apiVersion": "project.openshift.io/v1",   "metadata": {  "name": "${PROJECT}-cd"  } }' | oc apply -f -
+echo "-- Logged in openshift user:  $(oc whoami)"
+
 oc new-project ${PROJECT}-cd
 oc new-project ${PROJECT}-dev
 oc new-project ${PROJECT}-test
@@ -148,7 +148,7 @@ fi
 # create jenkins in the cd project
 oc process cd//cd-jenkins-master | oc create -f- -n ${PROJECT}-cd
 oc process cd//cd-jenkins-webhook-proxy | oc create -f- -n ${PROJECT}-cd
-
+echo "DIR 2 = $DIR"
 # add secrets for dockerfile build to dev and tes
 oc process cd//secrets PROJECT=${PROJECT} | oc create -f- -n ${PROJECT}-dev
 oc process cd//secrets PROJECT=${PROJECT} | oc create -f- -n ${PROJECT}-test
