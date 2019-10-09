@@ -148,6 +148,7 @@ fi
 # create jenkins in the cd project
 oc process cd//cd-jenkins-master | oc create -f- -n ${PROJECT}-cd
 
+echo "oc whoami ...:"
 oc whoami
 
 oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:${PROJECT}-cd:jenkins --rolebinding-name=self-provisioner-${PROJECT}-jenkins
