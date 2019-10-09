@@ -147,8 +147,11 @@ fi
 
 # create jenkins in the cd project
 oc process cd//cd-jenkins-master | oc create -f- -n ${PROJECT}-cd
+
+oc adm policy add-cluster-role-to-user self-provisioner system:serviceaccount:${PROJECT}-cd:jenkins -n ${PROJECT}-cd
+
 oc process cd//cd-jenkins-webhook-proxy | oc create -f- -n ${PROJECT}-cd
-echo "DIR 2 = $DIR"
+
 # add secrets for dockerfile build to dev and tes
 oc process cd//secrets PROJECT=${PROJECT} | oc create -f- -n ${PROJECT}-dev
 oc process cd//secrets PROJECT=${PROJECT} | oc create -f- -n ${PROJECT}-test
